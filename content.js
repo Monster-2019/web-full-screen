@@ -10,56 +10,111 @@ const styles = {
 
 let isWebFullScreen = false
 
-function getContainerElement() {
-    let videos = Array.from(document.querySelectorAll('video'))
-    let videoElement = videos.find(e => e.src !== '')
+const locationHref = location.href
 
+const isDuboku = locationHref.includes('w.duboku.io/vodplay')
+const isIyf = locationHref.includes('www.iyf.tv/play')
+
+function getContainerElement() {
     let containerElement = null
-    while (true) {
-        containerElement = videoElement.parentElement
-        height = getComputedStyle(containerElement).height
-        if (height.includes('px')) {
-            break
+    if (isIyf) {
+        containerElement = document.querySelector('#main-player')
+        if (containerElement) observer.disconnect()
+    }
+    if (isDuboku) {
+        containerElement = document.querySelector('table').parentElement
+        if (containerElement) {
+            observer.disconnect()
+            dubokuIframeKeydown(containerElement)
         }
     }
 
-    return containerElement
-}
-
-function openWebFullScreen(element) {
-    for (let property in styles) {
-        element.style[property] = styles[property]
+    if (containerElement) {
+        observerKeydown(containerElement)
     }
-    document.body.style.overflow = 'hidden'
-    isWebFullScreen = true
 }
 
-function closeWebFullScreen(element) {
-    for (let property in styles) {
-        element.style[property] = ''
+function dubokuIframeKeydown(containerElement) {
+    window.addEventListener('message', e => {
+        const data = e.data
+        if (data.keyCode && data.keyCode == 122) {
+            toggleFullScreen(containerElement)
+        }
+    })
+    parentHref = location.href
+    iframeEl = containerElement.querySelector('table iframe')
+    iframeEl.contentDocument.documentElement.addEventListener('keydown', e => {
+        if (e.keyCode == 122) {
+            e.preventDefault()
+            window.parent.postMessage(
+                {
+                    keyCode: event.keyCode
+                },
+                parentHref
+            )
+        }
+    })
+}
+
+function toggleDuboku(element) {
+    if (!isWebFullScreen) {
+        element.style['paddingBottom'] = '0px'
+        element
+            .querySelector('table iframe')
+            .contentDocument.documentElement.querySelector('video').parentElement.style[
+            'paddingTop'
+        ] = '0px'
+    } else {
+        element.style['paddingBottom'] = '56.25%'
+        element
+            .querySelector('table iframe')
+            .contentDocument.documentElement.querySelector('video').parentElement.style[
+            'paddingTop'
+        ] = '56.25%'
     }
-    document.body.style.overflow = 'auto'
-    isWebFullScreen = false
 }
 
-function main() {
-    let containerElement = getContainerElement()
+function toggleFullScreen(element) {
+    if (!element) {
+        console.log('未找到视频元素')
+        return 0
+    }
+    if (!isWebFullScreen) {
+        for (let property in styles) {
+            element.style[property] = styles[property]
+        }
+        document.body.style.overflow = 'hidden'
+    } else {
+        for (let property in styles) {
+            element.style[property] = ''
+        }
+        document.body.style.overflow = 'auto'
+    }
+    if (isDuboku) {
+        toggleDuboku(element)
+    }
+
+    isWebFullScreen = !isWebFullScreen
+}
+
+function observerKeydown(containerElement) {
     document.addEventListener(
         'keydown',
         e => {
             if (e.keyCode === 122) {
+                // F11
                 e.preventDefault()
-                if (!isWebFullScreen) {
-                    openWebFullScreen(containerElement)
-                } else {
-                    closeWebFullScreen(containerElement)
-                }
+                toggleFullScreen(containerElement)
             }
         },
         false
     )
 }
 
-setTimeout(() => {
-    main()
-}, 1000)
+console.log('content injection complete')
+
+var observer = new MutationObserver(getContainerElement)
+var config = { childList: true, subtree: true }
+observer.observe(document.body, config)
+
+getContainerElement()

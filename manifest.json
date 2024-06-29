@@ -2,18 +2,22 @@
 	"manifest_version": 3,
 	"name": "Web Full Screen",
 	"description": "视频网页全屏播放",
-	"version": "1.0",
+	"version": "1.0.1",
 	"icons": {
 		"48": "icon.png"
 	},
-	"content_scripts": [
-		{
-			"js": [
-				"content.js"
-			],
-			"matches": [
-				"https://www.iyf.tv/*"
-			]
-		}
-	]
+	"permissions": [
+		"activeTab",
+		"tabs",
+		"webNavigation",
+		"scripting"
+	],
+	"host_permissions": [
+		"https://www.iyf.tv/*",
+		"https://*.duboku.tv/*",
+		"https://*.duboku.io/*"
+	],
+	"background": {
+		"service_worker": "background.js"
+	}
 }
