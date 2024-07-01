@@ -12,7 +12,7 @@ let isWebFullScreen = false
 
 const locationHref = location.href
 
-const isDuboku = locationHref.includes('w.duboku.io/vodplay')
+const isDuboku = locationHref.includes('duboku.io/vodplay')
 const isIyf = locationHref.includes('www.iyf.tv/play')
 
 function getContainerElement() {
