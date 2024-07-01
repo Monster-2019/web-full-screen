@@ -10,7 +10,7 @@ chrome.webNavigation.onCompleted.addListener(
     {
         url: [
             { urlMatches: 'https://www.iyf.tv/play.*' },
-            { urlMatches: 'https://*.duboku.io/vodplay.*' }
+            { urlMatches: 'https://w.duboku.io/vodplay.*' }
         ]
     }
 )
@@ -27,7 +27,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(
     {
         url: [
             { urlMatches: 'https://www.iyf.tv/play.*' },
-            { urlMatches: 'https://*.duboku.io/vodplay.*' }
+            { urlMatches: 'https://w.duboku.io/vodplay.*' }
         ]
     }
 )
