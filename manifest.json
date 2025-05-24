@@ -1,8 +1,8 @@
 {
 	"manifest_version": 3,
-	"name": "Web Full Screen",
+	"name": "Web Full Screen Extensions",
 	"description": "视频网页全屏播放",
-	"version": "1.0.1",
+	"version": "1.0.3",
 	"icons": {
 		"48": "icon.png"
 	},
